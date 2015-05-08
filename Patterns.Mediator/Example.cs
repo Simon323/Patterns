@@ -6,57 +6,62 @@ using System.Threading.Tasks;
 
 namespace Patterns.Mediator
 {
-    public interface Mediator {
-        void wyślij(String id, String wiadomość);
+    public interface IMediator {
+        void SendMoney(String id, int amount);
     }
  
-class RzeczywistyMediator : Mediator {
+class Kir : IMediator {
 
-    private Dictionary<String, Kolega> koledzy = new Dictionary<String, Kolega>();
- 
-    public void zarejestrujKolegę(Kolega k) {
-        k.zarejestrujMediatora(this);
-        koledzy.Add(k.getId(), k);
+    private Dictionary<String, Bank> bankDictionary = new Dictionary<String, Bank>();
+
+    public void AddBank(Bank k)
+    {
+        k.RegisterMediator(this);
+        bankDictionary.Add(k.getId(), k);
     }
- 
-    public void wyślij(String id, String wiadomość) {
-        koledzy[id].odbierz(wiadomość);
+
+    public void SendMoney(String id, int amount)
+    {
+        bankDictionary[id].ReciveMoeny(amount);
     }
  }
  
-class Kolega {
+class Bank {
 
-    private Mediator mediator;
+    private IMediator mediator;
     private String id;
- 
-    public Kolega(String id) { this.id = id; }
-    public void zarejestrujMediatora(Mediator mediator) { this.mediator = mediator; }
+
+    public Bank(String id) { this.id = id; }
+    public void RegisterMediator(IMediator mediator) { this.mediator = mediator; }
     public String getId() { return id; }
- 
-    public void wyślij(String id, String wiadomość) {
-        Console.WriteLine("Przesyłanie wiadomości od "+this.id+" do "+id+": "+wiadomość);
-        mediator.wyślij(id, wiadomość); // Rzeczywista komunikacja odbywa się za pośrednictwem mediatora!!!
+
+    public void SendMoney(String id, int amount)
+    {
+        Console.WriteLine("Przesyłanie pieniędzy od "+this.id+" do "+id+": "+ amount);
+        mediator.SendMoney(id, amount); // Rzeczywista komunikacja odbywa się za pośrednictwem mediatora!!!
     }
- 
-    public void odbierz(String wiadomość) {
-        Console.WriteLine("Wiadomość odebrana przez " + id + ": " + wiadomość);
+
+    public void ReciveMoeny(int amount)
+    {
+        Console.WriteLine("Pieniądze odebranane przez " + id + ": " + amount);
     }
  }
  
 class PrzykładoweUżycieMediatora {
     public static void Main(string[] args) {
-        Kolega rene = new Kolega("rene");
-        Kolega toni = new Kolega("toni");
-        Kolega kim = new Kolega("kim");
+        Bank rene = new Bank("rene");
+        Bank toni = new Bank("toni");
+        Bank kim = new Bank("kim");
  
-        RzeczywistyMediator m = new RzeczywistyMediator();
-        m.zarejestrujKolegę(rene);
-        m.zarejestrujKolegę(toni);
-        m.zarejestrujKolegę(kim);
- 
-        kim.wyślij("toni", "Hello world.");
-        rene.wyślij("kim", "Witaj!");
+        Kir m = new Kir();
+        m.AddBank(rene);
+        m.AddBank(toni);
+        m.AddBank(kim);
 
+        kim.SendMoney("toni", 3000);
+        rene.SendMoney("kim", 1250);
+
+        Console.ReadLine();
     }
  }
 }
