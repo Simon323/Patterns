@@ -39,7 +39,7 @@ class Kolega {
     }
  
     public void odbierz(String wiadomość) {
-        Console.WriteLine("Wiadomość odebrana przez " + id + ": " + wiadomość);
+        Console.WriteLine("Wiadomość odebrana przez " + id + ": " + wiadomość); //zmiana 
     }
  }
  
